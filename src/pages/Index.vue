@@ -1,5 +1,5 @@
 <template>
-  <q-page class="flex flex-center">
+  <q-page class="container">
     <album></album>
   </q-page>
 </template>

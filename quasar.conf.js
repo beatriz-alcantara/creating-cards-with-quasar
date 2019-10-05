@@ -44,9 +44,13 @@ module.exports = function (ctx) {
 
       components: [
         'QCard',
-        'QCardSection'
+        'QCardSection',
+        'QImg',
+        'QDialog'
       ],
-      directives: [],
+      directives: [
+        'ClosePopup'
+      ],
 
       // Quasar plugins
       plugins: []

@@ -1,28 +1,35 @@
 <template>
   <div>
-    <div class="row justify-center">
-      <div class="col-6 items-center q-pb-xl">
-        <q-card v-if="mostrarCard">
-          <div class="relative-top text-subtitle2 text-center">
-            {{ title }}
-          </div>
-          <q-card-section class="bg-blue-grey-10">
-            <img :src="image" />
-          </q-card-section>
-          <q-card-section>Description: {{ description }}</q-card-section>
-        </q-card>
+    <div class="q-pa-md row items-start q-gutter-md" v-if="mostrarCard">
+      <q-card :key="obj.id" v-for="obj in cardsContent" class="my-card">
+        <q-card-section>
+          <q-img class="image" @click="showImage(obj.image)" style="height: 280px; width: 300px;" :src="obj.image">
+            <div class="absolute-bottom text-subtitle2 text-center">
+              {{ obj.title }}
+            </div>
+          </q-img>
+        </q-card-section>
+        <q-card-section>Description: {{ obj.description }}</q-card-section>
+      </q-card>
+    </div>
+    <q-dialog v-model="visualizingImage">
+      <img :src="selectedImage">
+    </q-dialog>
+    <div class="row flex flex-center">
+      <div class="fixed-center" v-if="showEditor">
+        <div class="col-3 col-sm-6 content-center self-center">
+          <q-uploader ref="upload" @added="savingImage"/>
+        </div>
+        <div class="col-3 col-sm-6 content-center self-center">
+          <q-input type="text" v-model="content.description" label="Description" />
+          <q-input type="text" v-model="content.title" label="Title" @keyup.enter="addingContent()" />
+          <q-btn @click="addingContent()" label="Done" />
+        </div>
       </div>
     </div>
-    <div class="column">
-      <div class="col-3 col-sm-6">
-        <q-uploader ref="upload" @added="savingImage" @removed="removingImage" />
+      <div v-if="mostrarCard">
+        <q-btn @click="edit()" label="Add Card"/>
       </div>
-      <div class="col-3 col-sm-6">
-        <q-input type="text" v-model="description" label="Description" />
-        <q-input type="text" v-model="title" label="Title" />
-        <q-btn @click="showButton" label="Done" />
-      </div>
-    </div>
   </div>
 </template>
 
@@ -30,28 +37,49 @@
 export default {
   data () {
     return {
-      description: '',
-      title: '',
-      image: '',
-      mostrarCard: false
+      cardsContent: [],
+      visualizingImage: false,
+      selectedImage: '',
+      content: {
+        description: '',
+        title: ''
+      },
+      mostrarCard: false,
+      showEditor: true
     }
   },
   methods: {
-    teste (file) {
-      alert('oi')
-      console.log(file)
-    },
     savingImage (file) {
-      this.image = file[0].__img.src
-      console.log(file[0])
+      this.content.image = file[0].__img.src
+      this.content.id = this.cardsContent.length
     },
-    removingImage (file) {
+    addingContent () {
       this.mostrarCard = true
-      this.image = ''
+      this.showEditor = false
+      this.cardsContent.push(this.content)
+      this.content = {}
     },
-    showButton () {
-      this.mostrarCard = true
+    edit () {
+      this.showEditor = true
+      this.mostrarCard = false
+    },
+    showImage (img) {
+      this.selectedImage = img
+      this.visualizingImage = true
     }
   }
 }
 </script>
+
+<style scoped>
+.my-card {
+  width: 100%;
+  height: 100%;
+  max-width: 350px;
+  max-height: 360px;
+  }
+
+  .image {
+    cursor: pointer;
+  }
+</style>
